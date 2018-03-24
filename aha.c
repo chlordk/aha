@@ -24,44 +24,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// table for vt220 character set, see also
-// https://whitefiles.org/b1_s/1_free_guides/fg2cd/pgs/c03b.htm
-const char ansi_vt220_character_set[256][16] =
-{
-	"&#x2400;","&#x2401;","&#x2402;","&#x2403;","&#x2404;","&#x2405;","&#x2406;","&#x2407;", //00..07
-	"&#x2408;","&#x2409;","&#x240a;","&#x240b;","&#x240c;","&#x240d;","&#x240e;","&#x240f;", //08..0f
-	"&#x2410;","&#x2411;","&#x2412;","&#x2413;","&#x2414;","&#x2415;","&#x2416;","&#x2417;", //10..17
-	"&#x2418;","&#x2419;","&#x241a;","&#x241b;","&#x241c;","&#x241d;","&#x241e;","&#x241f;", //18..1f
-	" "       ,"!"       ,"\""      ,"#"       ,"$"       ,"%"       ,"&"       ,"'"       , //20..27
-	"("       ,")"       ,"*"       ,"+"       ,","       ,"-"       ,"."       ,"/"       , //28..2f
-	"0"       ,"1"       ,"2"       ,"3"       ,"4"       ,"5"       ,"6"       ,"7"       , //30..37
-	"8"       ,"9"       ,":"       ,";"       ,"&lt;"    ,"="       ,"&gt;"    ,"?"       , //38..3f
-	"@"       ,"A"       ,"B"       ,"C"       ,"D"       ,"E"       ,"F"       ,"G"       , //40..47
-	"H"       ,"I"       ,"J"       ,"K"       ,"L"       ,"M"       ,"N"       ,"O"       , //48..4f
-	"P"       ,"Q"       ,"R"       ,"S"       ,"T"       ,"U"       ,"V"       ,"W"       , //50..57
-	"X"       ,"Y"       ,"Z"       ,"["       ,"\\"      ,"]"       ,"^"       ,"_"       , //58..5f
-	"`"       ,"a"       ,"b"       ,"c"       ,"d"       ,"e"       ,"f"       ,"g"       , //60..67
-	"h"       ,"i"       ,"j"       ,"k"       ,"l"       ,"m"       ,"n"       ,"o"       , //68..6f
-	"p"       ,"q"       ,"r"       ,"s"       ,"t"       ,"u"       ,"v"       ,"w"       , //70..77
-	"x"       ,"y"       ,"z"       ,"{"       ,"|"       ,"}"       ,"~"       ,"&#x2421;", //78..7f
-	"&#x25c6;","&#x2592;","&#x2409;","&#x240c;","&#x240d;","&#x240a;","&#x00b0;","&#x00b1;", //80..87
-	"&#x2400;","&#x240b;","&#x2518;","&#x2510;","&#x250c;","&#x2514;","&#x253c;","&#x23ba;", //88..8f
-	"&#x23bb;","&#x2500;","&#x23bc;","&#x23bd;","&#x251c;","&#x2524;","&#x2534;","&#x252c;", //90..97
-	"&#x2502;","&#x2264;","&#x2265;","&pi;    ","&#x2260;","&pound;" ,"&#x0095;","&#x2421;", //98..9f
-	"&#x2588;","&#x00a1;","&#x00a2;","&#x00a3;"," "       ,"&yen;"   ," "       ,"&#x00a7;", //a0..a7
-	"&#x00a4;","&#x00a9;","&#x00ba;","&#x00qb;"," "       ," "       ," "       ," "       , //a8..af
-	"&#x23bc;","&#x23bd;","&#x00b2;","&#x00b3;","&#x00b4;","&#x00b5;","&#x00b6;","&#x00b7;", //b0..b7
-	"&#x00b8;","&#x00b9;","&#x00ba;","&#x00bb;","&#x00bc;","&#x00bd;","&#x00be;","&#x00bf;", //b8..bf
-	"&#x00c0;","&#x00c1;","&#x00c2;","&#x00c3;","&#x00c4;","&#x00c5;","&#x00c6;","&#x00c7;", //c0..c7
-	"&#x00c8;","&#x00c9;","&#x00ca;","&#x00cb;","&#x00cc;","&#x00cd;","&#x00ce;","&#x00cf;", //c8..cf
-	" "       ,"&#x00d1;","&#x00d2;","&#x00d3;","&#x00d4;","&#x00d5;","&#x00d6;","&#x0152;", //d0..d7
-	"&#x00d8;","&#x00d9;","&#x00da;","&#x00db;","&#x00dc;","&#x0178;"," "       ,"&#x00df;", //d8..df
-	"&#x00e0;","&#x00e1;","&#x00e2;","&#x00e3;","&#x00e4;","&#x00e5;","&#x00e6;","&#x00e7;", //e0..e7
-	"&#x00e8;","&#x00e9;","&#x00ea;","&#x00eb;","&#x00ec;","&#x00ed;","&#x00ee;","&#x00ef;", //e8..ef
-	" "       ,"&#x00f1;","&#x00f2;","&#x00f3;","&#x00f4;","&#x00f5;","&#x00f6;","&#x0153;", //f0..f7
-	"&#x00f8;","&#x00f9;","&#x00fa;","&#x00fb;","&#x00fc;","&#x00ff;"," "       ,"&#x2588;", //f8..ff
-};
-
 int getNextChar(register FILE* fp)
 {
 	int c;
@@ -140,7 +102,6 @@ int main(int argc,char* args[])
 	char* filename=NULL;
 	register FILE *fp = stdin;
 	int colorshema=0; //0:normal, 1:black, 2:pink
-	int iso=-1; //utf8
 	char stylesheet=0;
 	char htop_fix=0;
 	char line_break=0;
@@ -160,7 +121,6 @@ int main(int argc,char* args[])
 			printf("\e[4moptions\e[0m: --black,      -b: \e[1;30m\e[1;47mBlack\e[0m Background and \e[1;37mWhite\e[0m \"standard color\"\n");
 			printf("         --pink,       -p: \e[1;35mPink\e[0m Background\n");
 			printf("         --stylesheet, -s: Use a stylesheet instead of inline styles\n");
-			printf("         --iso X,    -i X: Uses ISO 8859-X instead of utf-8. X must be 1..16\n");
 			printf("         --title X,  -t X: Gives the html output the title \"X\" instead of\n");
 			printf("                           \"stdin\" or the filename\n");
 			printf("         --line-fix,   -l: Uses a fix for inputs using control sequences to\n");
@@ -219,22 +179,6 @@ int main(int argc,char* args[])
 		if ((strcmp(args[p],"--stylesheet")==0) || (strcmp(args[p],"-s")==0))
 			stylesheet=1;
 		else
-		if ((strcmp(args[p],"--iso")==0) || (strcmp(args[p],"-i")==0))
-		{
-			if (p+1>=argc)
-			{
-				fprintf(stderr,"No ISO code given!\n");
-				return 0;
-			}
-			iso = atoi(args[p+1]);
-			if (iso<1 || iso>16)
-			{
-				fprintf(stderr,"not a valid ISO code: ISO 8859-%s\n",args[p+1]);
-				return 0;
-			}
-			p++;
-		}
-		else
 		if (strcmp(args[p],"-f")==0)
 		{
 			if (p+1>=argc)
@@ -263,7 +207,7 @@ int main(int argc,char* args[])
 		//Header:
 		printf("<!DOCTYPE html>\n"
 			"<!-- This file was created with the aha Ansi HTML Adapter. https://github.com/theZiz/aha -->\n"
-			"<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s-%i\">\n", iso>0 ? "ISO-8859" : "UTF", iso>0 ? iso : 8);
+			"<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
 		printf("<title>%s</title>\n", title ? title : filename ? filename : "stdin");
 		if (stylesheet)
 		{
@@ -360,7 +304,6 @@ int main(int argc,char* args[])
 	int bo = 0; //Not bold
 	int bl = 0; //No Blinking
 	int negative = 0; //No negative image
-	int special_char = 0; //No special characters
 	int ofc,obc,oul,obo,obl; //old values
 	int line=0;
 	int momline=0;
@@ -368,7 +311,7 @@ int main(int argc,char* args[])
 	int temp;
 	while ((c=fgetc(fp)) != EOF)
 	{
-		if (c=='\e')
+		if ('\e'==c)
 		{
 			//Saving old values
 			ofc=fc;
@@ -409,7 +352,7 @@ int main(int argc,char* args[])
 								mompos++;
 							if (mompos==momelem->digitcount) //only zeros => delete all
 							{
-								bo=0;ul=0;bl=0;fc=-1;bc=-1;negative=0;special_char=0;
+								bo=0;ul=0;bl=0;fc=-1;bc=-1;negative=0;
 							}
 							else
 							{
@@ -690,18 +633,6 @@ int main(int argc,char* args[])
 				while (c != 2 && c != 7) //STX and BEL end an OSC.
 					c = getNextChar(fp);
 			}
-			else
-			if ( c == '(' ) //Some VT100 ESC sequences, which should be ignored
-			{
-				//Reading (and ignoring!) one character should work for "(B"
-				//(US ASCII character set), "(A" (UK ASCII character set) and
-				//"(0" (Graphic). This whole "standard" is fucked up. Really...
-				c = getNextChar(fp);
-				if (c == '0') //we do not ignore ESC(0 ;)
-					special_char=1;
-				else
-					special_char=0;
-			}
 		}
 		else
 		if (c==13 && htop_fix)
@@ -735,29 +666,15 @@ int main(int argc,char* args[])
 			switch (c)
 			{
 				case '&':	printf("&amp;"); break;
-				case '\"': printf("&quot;"); break;
+				case '\"':	printf("&quot;"); break;
+				case '\'':	printf("&apos;"); break;
 				case '<':	printf("&lt;"); break;
 				case '>':	printf("&gt;"); break;
-				case '\n':case 13: momline++;
-									 line=0;
+				case '\n':
+				case 13:	momline++; line=0;
 				default:
-					if (special_char)
-						printf("%s",ansi_vt220_character_set[((int)c+32) & 255]);
-					else
-						printf("%c",c);
+						putchar(c);
 			}
-			if (iso>0) //only at ISOS
-				if ((c & 128)==128) //first bit set => there must be followbytes
-				{
-					int bits=2;
-					if ((c & 32)==32)
-						bits++;
-					if ((c & 16)==16)
-						bits++;
-					for (int meow=1;meow<bits;meow++)
-						printf("%c",getNextChar(fp));
-
-				}
 		}
 	}
 
