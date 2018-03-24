@@ -133,7 +133,7 @@ void deleteParse(pelem elem)
 }
 
 #define VERSION_PRINTF_MAKRO \
-	printf("\033[1;31mAnsi Html Adapter\033[0m Version "AHA_VERSION"\n");
+	printf("\e[1;31mAnsi Html Adapter\e[0m Version "AHA_VERSION"\n");
 
 int main(int argc,char* args[])
 {
@@ -153,12 +153,12 @@ int main(int argc,char* args[])
 		if ((strcmp(args[p],(char*)"--help")==0) || (strcmp(args[p],(char*)"-h")==0) || (strcmp(args[p],(char*)"-?")==0))
 		{
 			VERSION_PRINTF_MAKRO
-			printf("\033[1maha\033[0m takes SGR-colored Input and prints W3C conform HTML-Code\n");
-			printf("use: \033[1maha\033[0m <\033[4moptions\033[0m> [\033[4m-f file\033[0m]\n");
-			printf("     \033[1maha\033[0m (\033[4m--help\033[0m|\033[4m-h\033[0m|\033[4m-?\033[0m)\n");
-			printf("\033[1maha\033[0m reads the Input from a file or stdin and writes HTML-Code to stdout\n");
-			printf("\033[4moptions\033[0m: --black,      -b: \033[1;30m\033[1;47mBlack\033[0m Background and \033[1;37mWhite\033[0m \"standard color\"\n");
-			printf("         --pink,       -p: \033[1;35mPink\033[0m Background\n");
+			printf("\e[1maha\e[0m takes SGR-colored Input and prints W3C conform HTML-Code\n");
+			printf("use: \e[1maha\e[0m <\e[4moptions\e[0m> [\e[4m-f file\e[0m]\n");
+			printf("     \e[1maha\e[0m (\e[4m--help\e[0m|\e[4m-h\e[0m|\e[4m-?\e[0m)\n");
+			printf("\e[1maha\e[0m reads the Input from a file or stdin and writes HTML-Code to stdout\n");
+			printf("\e[4moptions\e[0m: --black,      -b: \e[1;30m\e[1;47mBlack\e[0m Background and \e[1;37mWhite\e[0m \"standard color\"\n");
+			printf("         --pink,       -p: \e[1;35mPink\e[0m Background\n");
 			printf("         --stylesheet, -s: Use a stylesheet instead of inline styles\n");
 			printf("         --iso X,    -i X: Uses ISO 8859-X instead of utf-8. X must be 1..16\n");
 			printf("         --title X,  -t X: Gives the html output the title \"X\" instead of\n");
@@ -166,17 +166,17 @@ int main(int argc,char* args[])
 			printf("         --line-fix,   -l: Uses a fix for inputs using control sequences to\n");
 			printf("                           change the cursor position like htop. It's a hot fix,\n");
 			printf("                           it may not work with any program like htop. Example:\n");
-			printf("                           \033[1mecho\033[0m q | \033[1mhtop\033[0m | \033[1maha\033[0m -l > htop.htm\n");
+			printf("                           \e[1mecho\e[0m q | \e[1mhtop\e[0m | \e[1maha\e[0m -l > htop.htm\n");
 			printf("         --word-wrap,  -w: Wrap long lines in the html file. This works with\n");
 			printf("                           CSS3 supporting browsers as well as many older ones.\n");
 			printf("         --no-header,  -n: Don't include header into generated HTML,\n");
 			printf("                           useful for inclusion in full HTML files.\n");
-			printf("Example: \033[1maha\033[0m --help | \033[1maha\033[0m --black > aha-help.htm\n");
+			printf("Example: \e[1maha\e[0m --help | \e[1maha\e[0m --black > aha-help.htm\n");
 			printf("         Writes this help text to the file aha-help.htm\n\n");
-			printf("Copyleft \033[1;32mAlexander Matthes\033[0m aka \033[4mZiz\033[0m "AHA_YEAR"\n");
-			printf("         \033[5;36mziz@mailbox.org\033[0m\n");
-			printf("         \033[5;36mhttps://github.com/theZiz/aha\033[0m\n");
-			printf("This application is subject to the \033[1;34mMPL\033[0m or \033[1;34mLGPL\033[0m.\n");
+			printf("Copyleft \e[1;32mAlexander Matthes\e[0m aka \e[4mZiz\e[0m "AHA_YEAR"\n");
+			printf("         \e[5;36mziz@mailbox.org\e[0m\n");
+			printf("         \e[5;36mhttps://github.com/theZiz/aha\e[0m\n");
+			printf("This application is subject to the \e[1;34mMPL\e[0m or \e[1;34mLGPL\e[0m.\n");
 			return 0;
 		}
 		else
@@ -380,7 +380,7 @@ int main(int argc,char* args[])
 	int temp;
 	while ((c=fgetc(fp)) != EOF)
 	{
-		if (c=='\033')
+		if (c=='\e')
 		{
 			//Saving old values
 			ofc=fc;
