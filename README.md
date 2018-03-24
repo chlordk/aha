@@ -18,6 +18,8 @@ Examples
   * Creates an HTML file with the output of htop. You have to use --line-fix due the other new-line-commands htop uses.
 * `MAN_KEEP_FORMATTING=1 COLUMNS=80 man aha | ul | aha > man-aha.htm`
   * Creates an HTML file with the man page of aha. Man uses nroff's bold and underline, which ul converts to SGR.
+* `recode iso-8859-5..utf8 < cyrillic.txt | aha --title Cyrillic > cyrillic.html`
+  * Converts an eight bit ISO-8859 to UTF-8 and save as HTML.
 
 Compilation / Installation
 ==========================
