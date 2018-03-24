@@ -261,22 +261,10 @@ int main(int argc,char* args[])
 	if (no_header == 0)
 	{
 		//Header:
-		if (iso<0)
-			printf("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
-		else
-			printf("<?xml version=\"1.0\" encoding=\"ISO-8859-%i\" ?><!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n",iso);
-		printf("<!-- This file was created with the aha Ansi HTML Adapter. https://github.com/theZiz/aha -->\n");
-		printf("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
-		printf("<head>\n<meta http-equiv=\"Content-Type\" content=\"application/xml+xhtml; charset=UTF-8\" />\n");
-		if (title)
-			printf("<title>%s</title>\n",title);
-		else
-		{
-			if (filename==NULL)
-				printf("<title>stdin</title>\n");
-			else
-				printf("<title>%s</title>\n",filename);
-		}
+		printf("<!DOCTYPE html>\n"
+			"<!-- This file was created with the aha Ansi HTML Adapter. https://github.com/theZiz/aha -->\n"
+			"<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s-%i\">\n", iso>0 ? "ISO-8859" : "UTF", iso>0 ? iso : 8);
+		printf("<title>%s</title>\n", title ? title : filename ? filename : "stdin");
 		if (stylesheet)
 		{
 			printf("<style type=\"text/css\">\n");
