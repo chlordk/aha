@@ -135,35 +135,35 @@ void print_usage(void)
 
 int main(int argc,char* argv[])
 {
-	char* filename=NULL;
 	register FILE *fp = stdin;
-	int colorshema=0; //0:normal, 1:black, 2:pink
-	char stylesheet=0;
-	char htop_fix=0;
-	char line_break=0;
+	static int colorshema=0; //0:normal, 1:black, 2:pink
+	static int stylesheet=0;
+	static int line_fix=0;
+	static int word_wrap=0;
+	static int no_header=0;
+	char* filename=NULL;
 	char* title=NULL;
-	char word_wrap=0;
-	char no_header=0;
+	char line_break=0;
 	//Searching Parameters
 	const static struct option long_options[] = {
-		{"black",      no_argument,       0,  'b' },
-		{"file",       required_argument, 0,  'f' },
-		{"help",       no_argument,       0,  'h' },
-		{"line-fix",   no_argument,       0,  'l' },
-		{"no-header",  no_argument,       0,  'n' },
-		{"pink",       no_argument,       0,  'p' },
-		{"stylesheet", no_argument,       0,  's' },
-		{"title",      required_argument, 0,  't' },
-		{"version",    no_argument,       0,  'v' },
-		{"word-wrap",  no_argument,       0,  'w' },
-		{0,            0,                 0,  0   }
+		{"black",      no_argument,       &colorshema, 1   },
+		{"pink",       no_argument,       &colorshema, 2   },
+		{"stylesheet", no_argument,       &stylesheet, 1   },
+		{"line-fix",   no_argument,       &line_fix,   1   },
+		{"no-header",  no_argument,       &no_header,  1   },
+		{"word-wrap",  no_argument,       &word_wrap,  1   },
+		{"file",       required_argument, 0,           'f' },
+		{"title",      required_argument, 0,           't' },
+		{"help",       no_argument,       0,           'h' },
+		{"version",    no_argument,       0,           'v' },
+		{0,            0,                 0,           0   }
 	};
 	//..Build short_options from long_options
 	char short_options[2*sizeof(long_options)/sizeof(long_options[0])];
 	int si=0, li=0; 
 	while (long_options[li].name)
 	{
-		short_options[si] = long_options[li].val;
+		short_options[si] = long_options[li].name[0];
 		if (required_argument == long_options[li].has_arg)
 			short_options[++si] = ':';
 		++si;
@@ -179,8 +179,11 @@ int main(int argc,char* argv[])
 		{
 			switch (opt)
 			{
-				case 'b': // black
-					colorshema=1;
+				case 0:
+					fprintf(stderr, "option %s", long_options[option_index].name);
+			        if (optarg)
+                		fprintf(stderr, " with arg %s", optarg);
+            		fprintf(stderr,"\n");
 					break;
 				case 'f': // file
 					if (NULL==optarg)
@@ -199,18 +202,6 @@ int main(int argc,char* argv[])
 				case 'h': // help
 					print_usage();
 					return 0;
-				case 'l': // line-fix
-					htop_fix=1;
-					break;
-				case 'n': // no-header
-					no_header=1;
-					break;
-				case 'p': // pink
-					colorshema=2;
-					break;
-				case 's': // stylesheet
-					stylesheet=1;
-					break;
 				case 't': // title
 					if (NULL==optarg)
 					{
@@ -222,15 +213,14 @@ int main(int argc,char* argv[])
 				case 'v': // version
 					VERSION_PRINTF_MAKRO
 					return 0;
-				case 'w': // word-wrap
-					word_wrap=1;
-					break;
 				default:
 					fprintf(stderr, "Unknown option '%c' (%d).\n", opt >= 32 ? opt : '?', opt);
 					return 2;
 			}
 		}
 	} while (0<=opt);
+printf("short_options: %s\n", short_options);
+printf("colorshema=%d\n", colorshema); exit(0);
 
 	if (no_header == 0)
 	{
@@ -469,7 +459,7 @@ int main(int argc,char* argv[])
 						deleteParse(elem);
 					break;
 					case 'H':
-						if (htop_fix) //a little dirty ...
+						if (line_fix) //a little dirty ...
 						{
 							elem=parseInsert(buffer);
 							pelem second=elem->next;
@@ -486,7 +476,7 @@ int main(int argc,char* argv[])
 						}
 					break;
 				}
-				if (htop_fix)
+				if (line_fix)
 					if (line_break)
 					{
 						for (;line<80;line++)
@@ -679,7 +669,7 @@ int main(int argc,char* argv[])
 			}
 		}
 		else
-		if (c==13 && htop_fix)
+		if (c==13 && line_fix)
 		{
 			for (;line<80;line++)
 				printf(" ");
