@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <getopt.h>
 
 int getNextChar(register FILE* fp)
 {
@@ -97,7 +98,35 @@ void deleteParse(pelem elem)
 #define VERSION_PRINTF_MAKRO \
 	printf("\e[1;31mAnsi Html Adapter\e[0m Version "AHA_VERSION"\n");
 
-int main(int argc,char* args[])
+void print_usage(void)
+{
+	VERSION_PRINTF_MAKRO
+	printf("\e[1maha\e[0m takes SGR-colored Input and prints W3C conform HTML-Code\n");
+	printf("use: \e[1maha\e[0m <\e[4moptions\e[0m> [\e[4m-f file\e[0m]\n");
+	printf("     \e[1maha\e[0m (\e[4m--help\e[0m|\e[4m-h\e[0m|\e[4m-?\e[0m)\n");
+	printf("\e[1maha\e[0m reads the Input from a file or stdin and writes HTML-Code to stdout\n");
+	printf("\e[4moptions\e[0m: --black,      -b: \e[1;30m\e[1;47mBlack\e[0m Background and \e[1;37mWhite\e[0m \"standard color\"\n");
+	printf("         --pink,       -p: \e[1;35mPink\e[0m Background\n");
+	printf("         --stylesheet, -s: Use a stylesheet instead of inline styles\n");
+	printf("         --title X,  -t X: Gives the html output the title \"X\" instead of\n");
+	printf("                           \"stdin\" or the filename\n");
+	printf("         --line-fix,   -l: Uses a fix for inputs using control sequences to\n");
+	printf("                           change the cursor position like htop. It's a hot fix,\n");
+	printf("                           it may not work with any program like htop. Example:\n");
+	printf("                           \e[1mecho\e[0m q | \e[1mhtop\e[0m | \e[1maha\e[0m -l > htop.htm\n");
+	printf("         --word-wrap,  -w: Wrap long lines in the html file. This works with\n");
+	printf("                           CSS3 supporting browsers as well as many older ones.\n");
+	printf("         --no-header,  -n: Don't include header into generated HTML,\n");
+	printf("                           useful for inclusion in full HTML files.\n");
+	printf("Example: \e[1maha\e[0m --help | \e[1maha\e[0m --black > aha-help.htm\n");
+	printf("         Writes this help text to the file aha-help.htm\n\n");
+	printf("Copyleft \e[1;32mAlexander Matthes\e[0m aka \e[4mZiz\e[0m "AHA_YEAR"\n");
+	printf("         \e[5;36mziz@mailbox.org\e[0m\n");
+	printf("         \e[5;36mhttps://github.com/theZiz/aha\e[0m\n");
+	printf("This application is subject to the \e[1;34mMPL\e[0m or \e[1;34mLGPL\e[0m.\n");
+}
+
+int main(int argc,char* argv[])
 {
 	char* filename=NULL;
 	register FILE *fp = stdin;
@@ -109,98 +138,92 @@ int main(int argc,char* args[])
 	char word_wrap=0;
 	char no_header=0;
 	//Searching Parameters
-	for (int p = 1;p<argc;p++)
+	const static struct option long_options[] = {
+		{"black",      no_argument,       0,  'b' },
+		{"file",       required_argument, 0,  'f' },
+		{"help",       no_argument,       0,  'h' },
+		{"line-fix",   no_argument,       0,  'l' },
+		{"no-header",  no_argument,       0,  'n' },
+		{"pink",       no_argument,       0,  'p' },
+		{"stylesheet", no_argument,       0,  's' },
+		{"title",      required_argument, 0,  't' },
+		{"version",    no_argument,       0,  'v' },
+		{"word-wrap",  no_argument,       0,  'w' },
+		{0,            0,                 0,  0   }
+	};
+	//..Build short_options from long_options
+	char short_options[2*sizeof(long_options)/sizeof(long_options[0])];
+	int si=0, li=0; 
+	while (long_options[li].name)
 	{
-		if ((strcmp(args[p],(char*)"--help")==0) || (strcmp(args[p],(char*)"-h")==0) || (strcmp(args[p],(char*)"-?")==0))
-		{
-			VERSION_PRINTF_MAKRO
-			printf("\e[1maha\e[0m takes SGR-colored Input and prints W3C conform HTML-Code\n");
-			printf("use: \e[1maha\e[0m <\e[4moptions\e[0m> [\e[4m-f file\e[0m]\n");
-			printf("     \e[1maha\e[0m (\e[4m--help\e[0m|\e[4m-h\e[0m|\e[4m-?\e[0m)\n");
-			printf("\e[1maha\e[0m reads the Input from a file or stdin and writes HTML-Code to stdout\n");
-			printf("\e[4moptions\e[0m: --black,      -b: \e[1;30m\e[1;47mBlack\e[0m Background and \e[1;37mWhite\e[0m \"standard color\"\n");
-			printf("         --pink,       -p: \e[1;35mPink\e[0m Background\n");
-			printf("         --stylesheet, -s: Use a stylesheet instead of inline styles\n");
-			printf("         --title X,  -t X: Gives the html output the title \"X\" instead of\n");
-			printf("                           \"stdin\" or the filename\n");
-			printf("         --line-fix,   -l: Uses a fix for inputs using control sequences to\n");
-			printf("                           change the cursor position like htop. It's a hot fix,\n");
-			printf("                           it may not work with any program like htop. Example:\n");
-			printf("                           \e[1mecho\e[0m q | \e[1mhtop\e[0m | \e[1maha\e[0m -l > htop.htm\n");
-			printf("         --word-wrap,  -w: Wrap long lines in the html file. This works with\n");
-			printf("                           CSS3 supporting browsers as well as many older ones.\n");
-			printf("         --no-header,  -n: Don't include header into generated HTML,\n");
-			printf("                           useful for inclusion in full HTML files.\n");
-			printf("Example: \e[1maha\e[0m --help | \e[1maha\e[0m --black > aha-help.htm\n");
-			printf("         Writes this help text to the file aha-help.htm\n\n");
-			printf("Copyleft \e[1;32mAlexander Matthes\e[0m aka \e[4mZiz\e[0m "AHA_YEAR"\n");
-			printf("         \e[5;36mziz@mailbox.org\e[0m\n");
-			printf("         \e[5;36mhttps://github.com/theZiz/aha\e[0m\n");
-			printf("This application is subject to the \e[1;34mMPL\e[0m or \e[1;34mLGPL\e[0m.\n");
-			return 0;
-		}
-		else
-		if ((strcmp(args[p],(char*)"--version")==0) || (strcmp(args[p],(char*)"-v")==0))
-		{
-			VERSION_PRINTF_MAKRO
-			return 0;
-		}
-		else
-		if ((strcmp(args[p],"--title")==0) || (strcmp(args[p],"-t")==0))
-		{
-			if (p+1>=argc)
-			{
-				fprintf(stderr,"No title given!\n");
-				return 0;
-			}
-			title=args[p+1];
-			p++;
-		}
-		else
-		if ((strcmp(args[p],"--line-fix")==0) || (strcmp(args[p],"-l")==0))
-		{
-			htop_fix=1;
-		}
-		else
-		if ((strcmp(args[p],"--no-header")==0) || (strcmp(args[p],"-n")==0))
-		{
-			no_header=1;
-		}
-		else
-		if ((strcmp(args[p],"--word-wrap")==0) || (strcmp(args[p],"-w")==0))
-			word_wrap=1;
-		else
-		if ((strcmp(args[p],"--black")==0) || (strcmp(args[p],"-b")==0))
-			colorshema=1;
-		else
-		if ((strcmp(args[p],"--pink")==0) || (strcmp(args[p],"-p")==0))
-			colorshema=2;
-		else
-		if ((strcmp(args[p],"--stylesheet")==0) || (strcmp(args[p],"-s")==0))
-			stylesheet=1;
-		else
-		if (strcmp(args[p],"-f")==0)
-		{
-			if (p+1>=argc)
-			{
-				fprintf(stderr,"no file to read given after \"-f\"!\n");
-				return 0;
-			}
-			fp = fopen(args[p+1],"r");
-			if (fp==NULL)
-			{
-				fprintf(stderr,"file \"%s\" not found!\n",args[p+1]);
-				return 0;
-			}
-			p++;
-			filename=args[p];
-		}
-		else
-		{
-			fprintf(stderr,"Unknown parameter \"%s\"\n",args[p]);
-			return 0;
-		}
+		short_options[si] = long_options[li].val;
+		if (required_argument == long_options[li].has_arg)
+			short_options[++si] = ':';
+		++si;
+		++li;
 	}
+	short_options[si]='\0';
+
+	int opt;
+	do {
+		int option_index=0;
+		opt = getopt_long(argc, argv, short_options, long_options, &option_index);
+		if (0<=opt)
+		{
+			switch (opt)
+			{
+				case 'b': // black
+					colorshema=1;
+					break;
+				case 'f': // file
+					if (NULL==optarg)
+					{
+						fprintf(stderr, "Error, no file to read given after \"-f\"!\n");
+						return 1;
+					}
+					fp = fopen(optarg,"r");
+					if (NULL==fp)
+					{
+						fprintf(stderr,"file \"%s\" not found!\n",optarg);
+						return 1;
+					}
+					filename=optarg;
+					break;
+				case 'h': // help
+					print_usage();
+					return 0;
+				case 'l': // line-fix
+					htop_fix=1;
+					break;
+				case 'n': // no-header
+					no_header=1;
+					break;
+				case 'p': // pink
+					colorshema=2;
+					break;
+				case 's': // stylesheet
+					stylesheet=1;
+					break;
+				case 't': // title
+					if (NULL==optarg)
+					{
+						fprintf(stderr, "Error, --title needs an argument\n");
+						return 1;
+					}
+					title=optarg;
+					break;
+				case 'v': // version
+					VERSION_PRINTF_MAKRO
+					return 0;
+				case 'w': // word-wrap
+					word_wrap=1;
+					break;
+				default:
+					fprintf(stderr, "Unknown option '%c' (%d).\n", opt >= 32 ? opt : '?', opt);
+					return 2;
+			}
+		}
+	} while (0<=opt);
 
 	if (no_header == 0)
 	{
@@ -693,3 +716,6 @@ int main(int argc,char* args[])
 		fclose(fp);
 	return 0;
 }
+/*
+vim: ts=4 :
+*/
