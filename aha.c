@@ -101,29 +101,31 @@ void deleteParse(pelem elem)
 void print_usage(void)
 {
 	VERSION_PRINTF_MAKRO
-	printf("\e[1maha\e[0m takes SGR-colored Input and prints W3C conform HTML-Code\n");
-	printf("use: \e[1maha\e[0m <\e[4moptions\e[0m> [\e[4m-f file\e[0m]\n");
-	printf("     \e[1maha\e[0m (\e[4m--help\e[0m|\e[4m-h\e[0m|\e[4m-?\e[0m)\n");
-	printf("\e[1maha\e[0m reads the Input from a file or stdin and writes HTML-Code to stdout\n");
-	printf("\e[4moptions\e[0m: --black,      -b: \e[1;30m\e[1;47mBlack\e[0m Background and \e[1;37mWhite\e[0m \"standard color\"\n");
-	printf("         --pink,       -p: \e[1;35mPink\e[0m Background\n");
-	printf("         --stylesheet, -s: Use a stylesheet instead of inline styles\n");
-	printf("         --title X,  -t X: Gives the html output the title \"X\" instead of\n");
-	printf("                           \"stdin\" or the filename\n");
-	printf("         --line-fix,   -l: Uses a fix for inputs using control sequences to\n");
-	printf("                           change the cursor position like htop. It's a hot fix,\n");
-	printf("                           it may not work with any program like htop. Example:\n");
-	printf("                           \e[1mecho\e[0m q | \e[1mhtop\e[0m | \e[1maha\e[0m -l > htop.htm\n");
-	printf("         --word-wrap,  -w: Wrap long lines in the html file. This works with\n");
-	printf("                           CSS3 supporting browsers as well as many older ones.\n");
-	printf("         --no-header,  -n: Don't include header into generated HTML,\n");
-	printf("                           useful for inclusion in full HTML files.\n");
-	printf("Example: \e[1maha\e[0m --help | \e[1maha\e[0m --black > aha-help.htm\n");
-	printf("         Writes this help text to the file aha-help.htm\n\n");
-	printf("Copyleft \e[1;32mAlexander Matthes\e[0m aka \e[4mZiz\e[0m "AHA_YEAR"\n");
-	printf("         \e[5;36mziz@mailbox.org\e[0m\n");
-	printf("         \e[5;36mhttps://github.com/theZiz/aha\e[0m\n");
-	printf("This application is subject to the \e[1;34mMPL\e[0m or \e[1;34mLGPL\e[0m.\n");
+	printf(
+		"\e[1maha\e[0m takes SGR-colored Input and prints W3C conform HTML-Code\n"
+		"use: \e[1maha\e[0m <\e[4moptions\e[0m> [\e[4m-f file\e[0m]\n"
+		"     \e[1maha\e[0m (\e[4m--help\e[0m|\e[4m-h\e[0m|\e[4m-?\e[0m)\n"
+		"\e[1maha\e[0m reads the Input from a file or stdin and writes HTML-Code to stdout\n"
+		"\e[4moptions\e[0m: --black,      -b: \e[1;30m\e[1;47mBlack\e[0m Background and \e[1;37mWhite\e[0m \"standard color\"\n"
+		"         --pink,       -p: \e[1;35mPink\e[0m Background\n"
+		"         --stylesheet, -s: Use a stylesheet instead of inline styles\n"
+		"         --title X,  -t X: Gives the html output the title \"X\" instead of\n"
+		"                           \"stdin\" or the filename\n"
+		"         --line-fix,   -l: Uses a fix for inputs using control sequences to\n"
+		"                           change the cursor position like htop. It's a hot fix,\n"
+		"                           it may not work with any program like htop. Example:\n"
+		"                           \e[1mecho\e[0m q | \e[1mhtop\e[0m | \e[1maha\e[0m -l > htop.htm\n"
+		"         --word-wrap,  -w: Wrap long lines in the html file. This works with\n"
+		"                           CSS3 supporting browsers as well as many older ones.\n"
+		"         --no-header,  -n: Don't include header into generated HTML,\n"
+		"                           useful for inclusion in full HTML files.\n"
+		"Example: \e[1maha\e[0m --help | \e[1maha\e[0m --black > aha-help.htm\n"
+		"         Writes this help text to the file aha-help.htm\n\n"
+		"Copyleft \e[1;32mAlexander Matthes\e[0m aka \e[4mZiz\e[0m "AHA_YEAR"\n"
+		"         \e[5;36mziz@mailbox.org\e[0m\n"
+		"         \e[5;36mhttps://github.com/theZiz/aha\e[0m\n"
+		"This application is subject to the \e[1;34mMPL\e[0m or \e[1;34mLGPL\e[0m.\n"
+	);
 }
 
 int main(int argc,char* argv[])
@@ -228,80 +230,94 @@ int main(int argc,char* argv[])
 	if (no_header == 0)
 	{
 		//Header:
-		printf("<!DOCTYPE html>\n"
+		printf(
+			"<!DOCTYPE html>\n"
 			"<!-- This file was created with the aha Ansi HTML Adapter. https://github.com/theZiz/aha -->\n"
-			"<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
+			"<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n"
+			);
 		printf("<title>%s</title>\n", title ? title : filename ? filename : "stdin");
 		if (stylesheet)
 		{
 			printf("<style type=\"text/css\">\n");
 			switch (colorshema)
 			{
-				case 1:  printf("body         {color: white; background-color: black;}\n");
-								 printf(".reset       {color: white;}\n");
-								 printf(".bg-reset    {background-color: black;}\n");
-								 printf(".inverted    {color: black;}\n");
-								 printf(".bg-inverted {background-color: white;}\n");
-								 break;
-				case 2:  printf("body         {background-color: pink;}\n");
-								 printf(".reset       {color: black;}\n");
-								 printf(".bg-reset    {background-color: pink;}\n");
-								 printf(".inverted    {color: pink;}\n");
-								 printf(".bg-inverted {background-color: black;}\n");
-								 break;
-				default: printf(".reset       {color: black;}\n");
-				         printf(".bg-reset    {background-color: white;}\n");
-				         printf(".inverted    {color: white;}\n");
-				         printf(".bg-inverted {background-color: black;}\n");
+				case 1:  printf(
+							"body         {color: white; background-color: black;}\n"
+							".reset       {color: white;}\n"
+							".bg-reset    {background-color: black;}\n"
+							".inverted    {color: black;}\n"
+							".bg-inverted {background-color: white;}\n"
+							);
+							break;
+				case 2:  printf(
+							"body         {background-color: pink;}\n"
+							".reset       {color: black;}\n"
+							".bg-reset    {background-color: pink;}\n"
+							".inverted    {color: pink;}\n"
+							".bg-inverted {background-color: black;}\n"
+							);
+							break;
+				default: printf(
+							".reset       {color: black;}\n"
+							".bg-reset    {background-color: white;}\n"
+							".inverted    {color: white;}\n"
+							".bg-inverted {background-color: black;}\n"
+							);
 			}
 			if (colorshema!=1)
 			{
-				printf(".dimgray     {color: dimgray;}\n");
-				printf(".red         {color: red;}\n");
-				printf(".green       {color: green;}\n");
-				printf(".yellow      {color: olive;}\n");
-				printf(".blue        {color: blue;}\n");
-				printf(".purple      {color: purple;}\n");
-				printf(".cyan        {color: teal;}\n");
-				printf(".white       {color: gray;}\n");
-				printf(".bg-black    {background-color: black;}\n");
-				printf(".bg-red      {background-color: red;}\n");
-				printf(".bg-green    {background-color: green;}\n");
-				printf(".bg-yellow   {background-color: olive;}\n");
-				printf(".bg-blue     {background-color: blue;}\n");
-				printf(".bg-purple   {background-color: purple;}\n");
-				printf(".bg-cyan     {background-color: teal;}\n");
-				printf(".bg-white    {background-color: gray;}\n");
+				printf(
+					".dimgray     {color: dimgray;}\n"
+					".red         {color: red;}\n"
+					".green       {color: green;}\n"
+					".yellow      {color: olive;}\n"
+					".blue        {color: blue;}\n"
+					".purple      {color: purple;}\n"
+					".cyan        {color: teal;}\n"
+					".white       {color: gray;}\n"
+					".bg-black    {background-color: black;}\n"
+					".bg-red      {background-color: red;}\n"
+					".bg-green    {background-color: green;}\n"
+					".bg-yellow   {background-color: olive;}\n"
+					".bg-blue     {background-color: blue;}\n"
+					".bg-purple   {background-color: purple;}\n"
+					".bg-cyan     {background-color: teal;}\n"
+					".bg-white    {background-color: gray;}\n"
+				);
 			}
 			else
 			{
-				printf(".dimgray     {color: dimgray;}\n");
-				printf(".red         {color: red;}\n");
-				printf(".green       {color: lime;}\n");
-				printf(".yellow      {color: yellow;}\n");
-				printf(".blue        {color: #3333FF;}\n");
-				printf(".purple      {color: fuchsia;}\n");
-				printf(".cyan        {color: aqua;}\n");
-				printf(".white       {color: white;}\n");
-				printf(".bg-black    {background-color: black;}\n");
-				printf(".bg-red      {background-color: red;}\n");
-				printf(".bg-green    {background-color: lime;}\n");
-				printf(".bg-yellow   {background-color: yellow;}\n");
-				printf(".bg-blue     {background-color: #3333FF;}\n");
-				printf(".bg-purple   {background-color: fuchsia;}\n");
-				printf(".bg-cyan     {background-color: aqua;}\n");
-				printf(".bg-white    {background-color: white;}\n");
+				printf(
+					".dimgray     {color: dimgray;}\n"
+					".red         {color: red;}\n"
+					".green       {color: lime;}\n"
+					".yellow      {color: yellow;}\n"
+					".blue        {color: #3333FF;}\n"
+					".purple      {color: fuchsia;}\n"
+					".cyan        {color: aqua;}\n"
+					".white       {color: white;}\n"
+					".bg-black    {background-color: black;}\n"
+					".bg-red      {background-color: red;}\n"
+					".bg-green    {background-color: lime;}\n"
+					".bg-yellow   {background-color: yellow;}\n"
+					".bg-blue     {background-color: #3333FF;}\n"
+					".bg-purple   {background-color: fuchsia;}\n"
+					".bg-cyan     {background-color: aqua;}\n"
+					".bg-white    {background-color: white;}\n"
+					);
 			}
-			printf(".underline   {text-decoration: underline;}\n");
-			printf(".bold        {font-weight: bold;}\n");
-			printf(".blink       {text-decoration: blink;}\n");
-			printf("</style>\n");
+			printf(
+				".underline   {text-decoration: underline;}\n"
+				".bold        {font-weight: bold;}\n"
+				".blink       {text-decoration: blink;}\n"
+				"</style>\n"
+				);
 		}
 		if (word_wrap)
-		{
-			printf("<style type=\"text/css\">pre {white-space: pre-wrap; white-space: -moz-pre-wrap !important;\n");
-			printf("white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;}</style>\n");
-		}
+			printf(
+				"<style type=\"text/css\">pre {white-space: pre-wrap; white-space: -moz-pre-wrap !important;\n"
+				"white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;}</style>\n"
+				);
 		printf("</head>\n");
 		if (stylesheet || ! colorshema)
 			printf("<body>\n");
@@ -707,9 +723,11 @@ int main(int argc,char* argv[])
 
 	if (no_header == 0)
 	{
-		printf("</pre>\n");
-		printf("</body>\n");
-		printf("</html>\n");
+		printf(
+			"</pre>\n"
+			"</body>\n"
+			"</html>\n"
+			);
 	}
 
 	if (fp!=stdin)
