@@ -219,8 +219,6 @@ int main(int argc,char* argv[])
 			}
 		}
 	} while (0<=opt);
-printf("short_options: %s\n", short_options);
-printf("colorshema=%d\n", colorshema); exit(0);
 
 	if (no_header == 0)
 	{
